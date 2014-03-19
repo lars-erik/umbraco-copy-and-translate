@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Umbraco.PasteAndTranslate", "Umbraco.PasteAndTranslate\Umbraco.PasteAndTranslate.csproj", "{0498BFEC-D804-4D4B-8C8F-CEB5F2F6C363}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Umbraco.PasteAndTranslate.Tests", "Umbraco.PasteAndTranslate.Tests\Umbraco.PasteAndTranslate.Tests.csproj", "{8CEB010F-2CC9-4BB8-AE79-9B8BEC5CF6E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Umbraco.PasteAndTranslate.Web", "Umbraco.PasteAndTranslate.Web\Umbraco.PasteAndTranslate.Web.csproj", "{65D6AEB0-F964-46E2-A20C-828BF3082F6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0498BFEC-D804-4D4B-8C8F-CEB5F2F6C363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0498BFEC-D804-4D4B-8C8F-CEB5F2F6C363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0498BFEC-D804-4D4B-8C8F-CEB5F2F6C363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0498BFEC-D804-4D4B-8C8F-CEB5F2F6C363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CEB010F-2CC9-4BB8-AE79-9B8BEC5CF6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CEB010F-2CC9-4BB8-AE79-9B8BEC5CF6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CEB010F-2CC9-4BB8-AE79-9B8BEC5CF6E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CEB010F-2CC9-4BB8-AE79-9B8BEC5CF6E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65D6AEB0-F964-46E2-A20C-828BF3082F6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65D6AEB0-F964-46E2-A20C-828BF3082F6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65D6AEB0-F964-46E2-A20C-828BF3082F6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65D6AEB0-F964-46E2-A20C-828BF3082F6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
