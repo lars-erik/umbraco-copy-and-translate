@@ -40,6 +40,8 @@ namespace Umbraco.PasteAndTranslate
 
         private void ContentCopied(IContentService sender, CopyEventArgs<IContent> e)
         {
+            // TODO: Refactor, factory translator and configure ShouldTranslate
+
             if (HttpContext.Current == null ||
                 String.IsNullOrWhiteSpace(HttpContext.Current.Request.Headers["Translate"]))
                 return;

@@ -82,6 +82,8 @@ namespace Umbraco.PasteAndTranslate
 
         private static void FindKeys()
         {
+            // TODO: Config file
+
             clientId = GetConfiguredValue("PasteAndTranslate/ClientId");
             secret = GetConfiguredValue("PasteAndTranslate/Secret");
 

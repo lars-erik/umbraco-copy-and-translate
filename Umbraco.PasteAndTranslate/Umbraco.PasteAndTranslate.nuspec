@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Lars-Erik Aabech</authors>
+    <owners>Lars-Erik Aabech / MarkedsPartner AS</owners>
+    <projectUrl>http://github.com/lars-erik/umbraco-copy-and-translate</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright MarkedsPartner AS 2014</copyright>
+    <tags>Umbraco Translation</tags>
+  </metadata>
+  <files>
+    <file src="..\Umbraco.PasteAndTranslate.Web\App_Plugins\PasteAndTranslate\*" target="content\App_Plugins\PasteAndTranslate"/>
+  </files>
+</package>
