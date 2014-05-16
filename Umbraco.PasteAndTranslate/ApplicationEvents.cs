@@ -48,10 +48,8 @@ namespace Umbraco.PasteAndTranslate
 
             var copy = e.Copy;
 
-            var originalPath = GetPath(e.Original);
-            var copiedPath = GetPath(copy);
-            var originalLanguageCode = FirstLanguage(originalPath);
-            var copiedLanguageCode = FirstLanguage(copiedPath);
+            var originalLanguageCode = HttpContext.Current.Request.Headers["translateFrom"];
+            var copiedLanguageCode = HttpContext.Current.Request.Headers["translateTo"];
 
             if (EmptyLanguage(originalLanguageCode, copiedLanguageCode))
                 return;
@@ -94,30 +92,6 @@ namespace Umbraco.PasteAndTranslate
         {
             return String.IsNullOrWhiteSpace(originalLanguage) ||
                    String.IsNullOrWhiteSpace(copiedLanguage);
-        }
-
-        private static IEnumerable<int> GetPath(IContent content)
-        {
-            return content.Path
-                .Split(',')
-                .Select(s => Convert.ToInt32(s))
-                .Skip(1);
-        }
-
-        private string FirstLanguage(IEnumerable<int> path)
-        {
-            return path.Reverse()
-                .SelectMany(GetDomains)
-                .Select(d => d.Language.CultureAlias)
-                .Distinct()
-                .FirstOrDefault();
-        }
-
-        private IEnumerable<Domain> GetDomains(int id)
-        {
-            var getDomains = typeof (Domain).GetMethod("GetDomains", BindingFlags.Static | BindingFlags.NonPublic, null, new[] {typeof (bool)}, null);
-            var domains = (IEnumerable<Domain>)getDomains.Invoke(null, new object[]{true});
-            return domains.Where(d => d.RootNodeId == id);
         }
     }
 }

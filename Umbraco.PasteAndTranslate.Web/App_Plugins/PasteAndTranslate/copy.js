@@ -1,6 +1,7 @@
 ﻿angular.module("umbraco")
 	.controller("MP.PasteAndTranslate.CopyController",
 	function ($scope, eventsService, contentResource, navigationService, appState, treeService, umbRequestHelper, $http) {
+        // custom start
 
 	    function copyWithHookHeader(args) {
 	        if (!args) {
@@ -17,11 +18,30 @@
                 $http.post(umbRequestHelper.getApiUrl("contentApiBaseUrl", "PostCopy"),
                     args, {
                         headers: {
-                            translate: "en"
+                            translate: "true",
+                            translateFrom: $scope.fromLanguage.Code,
+                            translateTo: $scope.toLanguage.Code
                         }
                     }),
                 'Failed to copy content');
 	    }
+
+        function setReady() {
+            $scope.pendingSelection = !$scope.fromLanguage || !$scope.toLanguage;
+        }
+
+	    $scope.pendingSelection = true;
+	    $scope.showLanguages = false;
+
+	    $scope.fromLanguage = null;
+	    $scope.availableFromLanguages = [];
+	    $scope.toLanguage = null;
+	    $scope.availableToLanguages = [];
+
+	    $scope.$watch(function () { return $scope.fromLanguage; }, setReady);
+	    $scope.$watch(function () { return $scope.toLanguage; }, setReady);
+
+        // end: custom
 
 	    var dialogOptions = $scope.$parent.dialogOptions;
 
@@ -53,10 +73,31 @@
 	        $scope.target = args.node;
 	        $scope.selectedEl = c;
 
+            // custom start
+
+	        $scope.showLanguages = false;
+	        $http.get("/umbraco/copyandtranslate/languages/getlanguages", {
+	            params: {
+	                fromId: dialogOptions.currentNode.id,
+	                toId: $scope.target.id
+	            }
+	        }).success(function (result) {
+	            $scope.showLanguages = true;
+	            $scope.availableFromLanguages = result[dialogOptions.currentNode.id];
+	            $scope.fromLanguage = $scope.availableFromLanguages.length === 1 ? $scope.availableFromLanguages[0] : null;
+	            $scope.availableToLanguages = result[$scope.target.id];
+	            $scope.toLanguage = $scope.availableToLanguages.length === 1 ? $scope.availableToLanguages[0] : null;
+	        });
+
+	        // end: custom
+
+
 	    });
 
 	    $scope.copy = function () {
+            // custom start
 	        copyWithHookHeader({ parentId: $scope.target.id, id: node.id, relateToOriginal: $scope.relateToOriginal })
+            // end: custom
                 .then(function (path) {
                     $scope.error = false;
                     $scope.success = true;

@@ -35,6 +35,27 @@
                             <input type="checkbox" ng-model="$parent.$parent.relateToOriginal" />
                         </umb-control-group>
                     </umb-pane>
+                    
+                    <div class="umb-pane" style="margin-top: -40px">
+                        <div class="control-group umb-control-group" ng-show="showLanguages">
+                            <div class="umb-el-wrap">
+                                <label class="control-label">From language</label>
+                                <div class="controls controls-row">
+                                    <select ng-model="fromLanguage" ng-options="language.Name for language in availableFromLanguages" ng-show="availableFromLanguages.length > 1"></select>
+                                    <label ng-show="availableFromLanguages.length === 1">{{fromLanguage.Name}}</label>
+                                    <label ng-show="availableFromLanguages.length === 0">Cannot translate from node without language in hierarchy</label>
+                                </div>
+                            </div>
+                            <div class="umb-el-wrap">
+                                <label class="control-label">To language</label>
+                                <div class="controls controls-row">
+                                    <select ng-model="toLanguage" ng-options="language.Name for language in availableToLanguages" ng-show="availableToLanguages.length > 1"></select>
+                                    <label ng-show="availableToLanguages.length === 1">{{toLanguage.Name}}</label>
+                                    <label ng-show="availableToLanguages.length === 0">Cannot translate to node without language in hierarchy</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </ng-form>
@@ -45,7 +66,7 @@
         <a class="btn btn-link" ng-click="nav.hideDialog()">
             <localize key="general_cancel">Cancel</localize>
         </a>
-        <button class="btn btn-primary" ng-click="copy()">
+        <button class="btn btn-primary" ng-click="copy()" ng-disabled="pendingSelection">
             <localize key="actions_copy">Copy</localize>
         </button>
     </div>

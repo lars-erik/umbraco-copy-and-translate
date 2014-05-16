@@ -154,3 +154,15 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/packages
+/Umbraco.PasteAndTranslate.Web/App_Browsers
+/Umbraco.PasteAndTranslate.Web/App_Code
+/Umbraco.PasteAndTranslate.Web/App_Data
+/Umbraco.PasteAndTranslate.Web/App_Data/NuGetBackup/20140516-121400
+/Umbraco.PasteAndTranslate.Web/App_Data/packages/installed
+/Umbraco.PasteAndTranslate.Web/config/splashes
+/Umbraco.PasteAndTranslate.Web/umbraco
+/Umbraco.PasteAndTranslate.Web/umbraco_client
+/Umbraco.PasteAndTranslate.Web/web.config.backup
+/Umbraco.PasteAndTranslate.Web/App_Plugins/dummy.txt
+*.nupkg
