@@ -63,10 +63,11 @@
     </div>
 
     <div class="umb-dialog-footer btn-toolbar umb-btn-toolbar" ng-hide="success">
-        <a class="btn btn-link" ng-click="nav.hideDialog()">
+        <span ng-bind="status" style="float:left; font-size:14px; padding:5px; background-color: #CCCCCC; border-radius: 5px;"></span>
+        <a class="btn btn-link" ng-click="nav.hideDialog()" ng-disabled="copying">
             <localize key="general_cancel">Cancel</localize>
         </a>
-        <button class="btn btn-primary" ng-click="copy()" ng-disabled="pendingSelection">
+        <button class="btn btn-primary" ng-click="copy()" ng-disabled="pendingSelection || copying">
             <localize key="actions_copy">Copy</localize>
         </button>
     </div>

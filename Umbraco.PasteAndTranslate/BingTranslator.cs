@@ -25,10 +25,7 @@ namespace Umbraco.PasteAndTranslate
         {
             EnsureToken();
 
-            HttpResponseMessage result = null;
             string body = null;
-            string xml = null;
-
 
             var client = new HttpClient();
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -38,19 +35,25 @@ namespace Umbraco.PasteAndTranslate
                 {"to", to},
             });
             content.ReadAsStringAsync()
-                .ContinueWith(r => body = r.Result)
+                .ContinueWith(r => (object)(body = r.Result))
                 .Wait(Timeout);
             var request = new HttpRequestMessage(HttpMethod.Get,
                 "http://api.microsofttranslator.com/v2/Http.svc/Translate?" + body);
             request.Headers.Add("Authorization", "Bearer " + token.access_token);
-            client.SendAsync(request)
-                .ContinueWith(r => result = r.Result)
-                .Wait(Timeout);
-            result.Content.ReadAsStringAsync()
-                .ContinueWith(r => xml = r.Result)
-                .Wait(Timeout);
-            var serializer = new XmlSerializer(typeof(string), "http://schemas.microsoft.com/2003/10/Serialization/");
-            return serializer.Deserialize(new StringReader(xml)) as string;
+            var translateTask = client.SendAsync(request)
+                .ContinueWith(r => r.Result.Content.ReadAsStringAsync())
+                //.Wait(Timeout);
+            //result.Content.ReadAsStringAsync()
+                //.ContinueWith(r => r.Result.ReadAsStringAsync())
+                .ContinueWith(t =>
+                {
+                    var xml = t.Unwrap().Result;
+                    var serializer = new XmlSerializer(typeof(string), "http://schemas.microsoft.com/2003/10/Serialization/");
+                    return serializer.Deserialize(new StringReader(xml)) as string;
+
+                });
+            translateTask.Wait(Timeout);
+            return translateTask.Result;
         }
 
         private void EnsureToken()
@@ -59,7 +62,10 @@ namespace Umbraco.PasteAndTranslate
                 return;
             HttpResponseMessage msg = null;
             string result = null;
-            
+ 
+            if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(secret))
+                throw new Exception("Configure 'PastAndTranslate/ClientId' and 'PastAndTranslate/Secret' appSettings or environment variables.");
+           
             const string datamarketAccessUri = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
             var client = new HttpClient();
             var content = new FormUrlEncodedContent(
@@ -86,9 +92,6 @@ namespace Umbraco.PasteAndTranslate
 
             clientId = GetConfiguredValue("PasteAndTranslate/ClientId");
             secret = GetConfiguredValue("PasteAndTranslate/Secret");
-
-            if (String.IsNullOrWhiteSpace(clientId) || String.IsNullOrWhiteSpace(secret))
-                throw new Exception("Configure 'PastAndTranslate/ClientId' and 'PastAndTranslate/Secret' appSettings or environment variables.");
         }
 
         private static string GetConfiguredValue(string key)

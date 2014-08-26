@@ -17,5 +17,14 @@ namespace Umbraco.PasteAndTranslate.Tests
             var result = translator.Translate("Hello world!", "en", "no");
             Assert.AreEqual("Hallo, verden!", result);
         }
+
+        //[Test]
+        //public void TranslateAsync_Is_Awaitable()
+        //{
+        //    var translator = new BingTranslator();
+        //    var task = translator.TranslateAsync("Hello world!", "en", "no");
+        //    task.Wait(TimeSpan.FromSeconds(10));
+        //    Assert.AreEqual("Hallo, verden!", task.Result);
+        //}
     }
 }

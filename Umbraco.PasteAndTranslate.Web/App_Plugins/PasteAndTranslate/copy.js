@@ -3,7 +3,7 @@
 	function ($scope, eventsService, contentResource, navigationService, appState, treeService, umbRequestHelper, $http) {
         // custom start
 
-	    function copyWithHookHeader(args) {
+	    function copyWithHookHeader(args, key) {
 	        if (!args) {
 	            throw "args cannot be null";
 	        }
@@ -15,12 +15,14 @@
 	        }
 
 	        return umbRequestHelper.resourcePromise(
-                $http.post(umbRequestHelper.getApiUrl("contentApiBaseUrl", "PostCopy"),
+                $http.post("/umbraco/copyandtranslate/languages/PostCopy",
+                    //umbRequestHelper.getApiUrl("contentApiBaseUrl", "PostCopy"),
                     args, {
                         headers: {
                             translate: "true",
                             translateFrom: $scope.fromLanguage.Code,
-                            translateTo: $scope.toLanguage.Code
+                            translateTo: $scope.toLanguage.Code,
+                            translateGuid: key
                         }
                     }),
                 'Failed to copy content');
@@ -32,11 +34,14 @@
 
 	    $scope.pendingSelection = true;
 	    $scope.showLanguages = false;
+	    $scope.copying = false;
 
 	    $scope.fromLanguage = null;
 	    $scope.availableFromLanguages = [];
 	    $scope.toLanguage = null;
 	    $scope.availableToLanguages = [];
+
+	    $scope.status = "";
 
 	    $scope.$watch(function () { return $scope.fromLanguage; }, setReady);
 	    $scope.$watch(function () { return $scope.toLanguage; }, setReady);
@@ -94,31 +99,78 @@
 
 	    });
 
+	    function updateStatus(scope, key) {
+	        $.ajax({
+	            url: "/umbraco/copyandtranslate/languages/status",
+	            method: "POST",
+
+	            headers: {
+	                translateGuid: key
+	            },
+
+	            success: function(status) {
+	                scope.$apply(function() {
+	                    scope.status = status;
+	                });
+	            }
+	        });
+        }
+
+	    function startPolling(scope, key) {
+	        updateStatus(scope, key);
+            return setInterval(function() {
+                updateStatus(scope, key);
+            }, 1000);
+        }
+
 	    $scope.copy = function () {
-            // custom start
-	        copyWithHookHeader({ parentId: $scope.target.id, id: node.id, relateToOriginal: $scope.relateToOriginal })
-            // end: custom
-                .then(function (path) {
-                    $scope.error = false;
-                    $scope.success = true;
+	        // custom start
+	        var interval,
+	            promise;
 
-                    //get the currently edited node (if any)
-                    var activeNode = appState.getTreeState("selectedNode");
+	        $scope.copying = true;
 
-                    //we need to do a double sync here: first sync to the copied content - but don't activate the node,
-                    //then sync to the currenlty edited content (note: this might not be the content that was copied!!)
+	        promise = $http.post("/umbraco/copyandtranslate/languages/initialize")
+	            .then(function(result) {
+	                var key = JSON.parse(result.data);
+	                interval = startPolling($scope, key);
+	                return copyWithHookHeader({ parentId: $scope.target.id, id: node.id, relateToOriginal: $scope.relateToOriginal }, key);
+	            })
+	            .then(function(path) {
+	                $scope.error = false;
+	                $scope.success = true;
 
-                    navigationService.syncTree({ tree: "content", path: path, forceReload: true, activate: false }).then(function (args) {
-                        if (activeNode) {
-                            var activeNodePath = treeService.getPath(activeNode).join();
-                            //sync to this node now - depending on what was copied this might already be synced but might not be
-                            navigationService.syncTree({ tree: "content", path: activeNodePath, forceReload: false, activate: true });
-                        }
-                    });
+	                //get the currently edited node (if any)
+	                var activeNode = appState.getTreeState("selectedNode");
 
-                }, function (err) {
-                    $scope.success = false;
-                    $scope.error = err;
-                });
+	                //we need to do a double sync here: first sync to the copied content - but don't activate the node,
+	                //then sync to the currenlty edited content (note: this might not be the content that was copied!!)
+
+	                navigationService.syncTree({ tree: "content", path: path, forceReload: true, activate: false }).then(function(args) {
+	                    if (activeNode) {
+	                        var activeNodePath = treeService.getPath(activeNode).join();
+	                        //sync to this node now - depending on what was copied this might already be synced but might not be
+	                        navigationService.syncTree({ tree: "content", path: activeNodePath, forceReload: false, activate: true });
+	                    }
+	                });
+
+	            }, function(err) {
+	                $scope.success = false;
+	                $scope.error = err;
+	            });
+
+	        if (promise["always"])
+	            promise["always"](function() {
+	                clearInterval(interval);
+	                $scope.copying = false;
+	            });
+	        else if (promise["finally"]);
+	            promise["always"](function () {
+	                clearInterval(interval);
+	                $scope.copying = false;
+	            });
+
+	        // end: custom
+
 	    };
 	});

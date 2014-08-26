@@ -62,6 +62,10 @@ namespace Umbraco.PasteAndTranslate
 
             var translator = new BingTranslator();
 
+            var guid = HttpContext.Current.Request.Headers["translateGuid"];
+
+            HttpContext.Current.Cache[guid] = "Translating " + copy.Name;
+
             copy.Name = translator.Translate(copy.Name, originalLanguage, copiedLanguage);
 
             foreach (var property in copy.Properties)
@@ -79,6 +83,8 @@ namespace Umbraco.PasteAndTranslate
                     }
                 }
             }
+
+            HttpContext.Current.Cache[guid] = "Translated " + copy.Name;
 
             sender.Save(copy, 0, false);
         }
