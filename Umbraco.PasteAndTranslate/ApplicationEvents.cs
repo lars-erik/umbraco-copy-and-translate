@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using umbraco.cms.businesslogic.web;
 using Umbraco.Core;
@@ -61,12 +62,18 @@ namespace Umbraco.PasteAndTranslate
             var copiedLanguage = copiedCulture.TwoLetterISOLanguageName;
 
             var translator = new BingTranslator();
+            var tasks = new List<Task<string>>();
 
             var guid = HttpContext.Current.Request.Headers["translateGuid"];
 
             HttpContext.Current.Cache[guid] = "Translating " + copy.Name;
 
-            copy.Name = translator.Translate(copy.Name, originalLanguage, copiedLanguage);
+            tasks.Add(
+                translator
+                    .TranslateAsync(copy.Name, originalLanguage, copiedLanguage)
+                    .ContinueWith(r => copy.Name = r.Result)
+                );
+            //copy.Name = translator.Translate(copy.Name, originalLanguage, copiedLanguage);
 
             foreach (var property in copy.Properties)
             {
@@ -79,10 +86,17 @@ namespace Umbraco.PasteAndTranslate
                     var text = property.Value as string;
                     if (!String.IsNullOrWhiteSpace(text))
                     {
-                        property.Value = translator.Translate(text, originalLanguage, copiedLanguage);
+                        tasks.Add(
+                            translator
+                                .TranslateAsync(text, originalLanguage, copiedLanguage)
+                                .ContinueWith(r => (string)(property.Value = r.Result))
+                            );
+                        //property.Value = translator.Translate(text, originalLanguage, copiedLanguage);
                     }
                 }
             }
+
+            System.Threading.Tasks.Task.WhenAll(tasks).Wait(TimeSpan.FromSeconds(60));
 
             HttpContext.Current.Cache[guid] = "Translated " + copy.Name;
 

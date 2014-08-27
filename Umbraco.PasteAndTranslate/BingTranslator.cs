@@ -23,10 +23,16 @@ namespace Umbraco.PasteAndTranslate
 
         public string Translate(string text, string from, string to)
         {
+            var translateTask = TranslateAsync(text, from, to);
+            translateTask.Wait(Timeout);
+            return translateTask.Result;
+        }
+
+        public Task<string> TranslateAsync(string text, string from, string to)
+        {
             EnsureToken();
 
             string body = null;
-
             var client = new HttpClient();
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -35,25 +41,20 @@ namespace Umbraco.PasteAndTranslate
                 {"to", to},
             });
             content.ReadAsStringAsync()
-                .ContinueWith(r => (object)(body = r.Result))
+                .ContinueWith(r => (object) (body = r.Result))
                 .Wait(Timeout);
             var request = new HttpRequestMessage(HttpMethod.Get,
                 "http://api.microsofttranslator.com/v2/Http.svc/Translate?" + body);
             request.Headers.Add("Authorization", "Bearer " + token.access_token);
             var translateTask = client.SendAsync(request)
                 .ContinueWith(r => r.Result.Content.ReadAsStringAsync())
-                //.Wait(Timeout);
-            //result.Content.ReadAsStringAsync()
-                //.ContinueWith(r => r.Result.ReadAsStringAsync())
                 .ContinueWith(t =>
                 {
                     var xml = t.Unwrap().Result;
-                    var serializer = new XmlSerializer(typeof(string), "http://schemas.microsoft.com/2003/10/Serialization/");
+                    var serializer = new XmlSerializer(typeof (string), "http://schemas.microsoft.com/2003/10/Serialization/");
                     return serializer.Deserialize(new StringReader(xml)) as string;
-
                 });
-            translateTask.Wait(Timeout);
-            return translateTask.Result;
+            return translateTask;
         }
 
         private void EnsureToken()
