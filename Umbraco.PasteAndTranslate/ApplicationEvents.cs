@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -105,7 +106,12 @@ namespace Umbraco.PasteAndTranslate
 
         private bool ShouldTranslate(string propertyEditorAlias)
         {
-            return true;
+            string appSetting = ConfigurationManager.AppSettings["PasteAndTranslate/DataTypes"];
+            if (String.IsNullOrWhiteSpace(appSetting) || appSetting.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Contains(propertyEditorAlias))
+                return true;
+
+            return false;
+            
         }
 
         private static bool EmptyLanguage(string originalLanguage, string copiedLanguage)
