@@ -14,7 +14,7 @@ namespace Umbraco.PasteAndTranslate
 {
     [PluginController("CopyAndTranslate")]
     [UmbracoApplicationAuthorizeAttribute("content")]
-    public class LanguagesController : UmbracoApiController
+    public class LanguagesController : UmbracoAuthorizedApiController
     {
         public string Initialize()
         {

@@ -15,7 +15,7 @@
 	        }
 
 	        return umbRequestHelper.resourcePromise(
-                $http.post("/umbraco/copyandtranslate/languages/PostCopy",
+                $http.post("/umbraco/backoffice/copyandtranslate/languages/PostCopy",
                     //umbRequestHelper.getApiUrl("contentApiBaseUrl", "PostCopy"),
                     args, {
                         headers: {
@@ -81,7 +81,7 @@
             // custom start
 
 	        $scope.showLanguages = false;
-	        $http.get("/umbraco/copyandtranslate/languages/getlanguages", {
+	        $http.get("/umbraco/backoffice/copyandtranslate/languages/getlanguages", {
 	            params: {
 	                fromId: dialogOptions.currentNode.id,
 	                toId: $scope.target.id
@@ -101,7 +101,7 @@
 
 	    function updateStatus(scope, key) {
 	        $.ajax({
-	            url: "/umbraco/copyandtranslate/languages/status",
+	            url: "/umbraco/backoffice/copyandtranslate/languages/status",
 	            method: "POST",
 
 	            headers: {
@@ -130,7 +130,7 @@
 
 	        $scope.copying = true;
 
-	        promise = $http.post("/umbraco/copyandtranslate/languages/initialize")
+	        promise = $http.post("/umbraco/backoffice/copyandtranslate/languages/initialize")
 	            .then(function(result) {
 	                var key = JSON.parse(result.data);
 	                interval = startPolling($scope, key);
