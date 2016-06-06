@@ -36,7 +36,7 @@ namespace Umbraco.PasteAndTranslate
             var guid = HttpContext.Current.Request.Headers["translateGuid"];
             try
             {
-                var controller = new ContentController(UmbracoContext) {Request = Request};
+                var controller = new ContentController(UmbracoContext);
                 return controller.PostCopy(moveOrCopy);
             }
             finally
